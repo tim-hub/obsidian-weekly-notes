@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, setSystemTime, test } from 'bun:test';
-import type { App } from 'obsidian';
+import 'moment/locale/en-nz';
+import { moment, type App } from 'obsidian';
 import { DEFAULT_SETTINGS, WeeklyNotesSettings } from './settings';
 import { openThisWeeksNote } from './weekly-note';
 
@@ -74,7 +75,10 @@ const settings = (
 ): WeeklyNotesSettings => ({ ...DEFAULT_SETTINGS, folder: 'Weekly', ...overrides });
 
 describe('openThisWeeksNote', () => {
-	afterEach(() => setSystemTime());
+	afterEach(() => {
+		setSystemTime();
+		moment.locale('en');
+	});
 
 	test('defaults: weekly-notes folder, Sunday-start file, Mon to Fri headers', async () => {
 		setSystemTime(new Date(2026, 10, 18, 9, 30));
@@ -188,6 +192,18 @@ describe('openThisWeeksNote', () => {
 		await openThisWeeksNote(app, settings({ folder: '' }));
 
 		expect(files.get('Week-47-2026-11-15.md')).toStartWith(
+			'Previous: [[Week-46-2026-11-08]]',
+		);
+	});
+
+	test('same file name and previous link whatever the machine locale', async () => {
+		moment.locale('en-nz');
+		setSystemTime(new Date(2026, 10, 18));
+		const { app, files } = fakeVault({ 'Weekly/Week-46-2026-11-08.md': '' });
+
+		await openThisWeeksNote(app, settings());
+
+		expect(files.get('Weekly/Week-47-2026-11-15.md')).toStartWith(
 			'Previous: [[Week-46-2026-11-08]]',
 		);
 	});

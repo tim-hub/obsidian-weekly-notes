@@ -14,14 +14,18 @@ export function getWeekStart(
 	startDay: WeekStartDay,
 ): moment.Moment {
 	const daysSinceStart = (date.day() - startDay + 7) % 7;
-	return date.clone().startOf('day').subtract(daysSinceStart, 'days');
+	return date
+		.clone()
+		.locale('en')
+		.startOf('day')
+		.subtract(daysSinceStart, 'days');
 }
 
 export function parseWeekStart(
 	basename: string,
 	format: string,
 ): moment.Moment | null {
-	const parsed = moment(basename, format, true);
+	const parsed = moment(basename, format, 'en', true);
 	return parsed.isValid() && parsed.format(format) === basename
 		? parsed
 		: null;
