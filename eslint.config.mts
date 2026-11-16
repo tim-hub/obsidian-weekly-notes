@@ -11,7 +11,7 @@ export default defineConfig(
 		'versions.json',
 		'main.js',
 		'package.json',
-		'package-lock.json',
+		'bun.lock',
 		'tsconfig.json',
 	]),
 	{
@@ -29,4 +29,8 @@ export default defineConfig(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		files: ['test/**/*.ts'],
+		rules: { '@typescript-eslint/no-restricted-imports': 'off' },
+	},
 );

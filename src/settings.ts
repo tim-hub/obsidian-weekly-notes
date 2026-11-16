@@ -1,38 +1,17 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
-import MyPlugin from './main';
+import { HeaderDays, WeekStartDay } from './week';
 
-export interface MyPluginSettings {
-	mySetting: string;
+export interface WeeklyNotesSettings {
+	weekStart: WeekStartDay;
+	format: string;
+	folder: string;
+	headerFormat: string;
+	headerDays: HeaderDays;
 }
 
-export const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default',
+export const DEFAULT_SETTINGS: WeeklyNotesSettings = {
+	weekStart: 0,
+	format: '[Week-]ww-YYYY-MM-DD',
+	folder: 'weekly-notes',
+	headerFormat: 'ddd YYYY-MM-DD',
+	headerDays: 'MF',
 };
-
-export class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		const { containerEl } = this;
-
-		containerEl.empty();
-
-		new Setting(containerEl)
-			.setName('Settings #1')
-			.setDesc("It's a secret")
-			.addText((text) =>
-				text
-					.setPlaceholder('Enter your secret')
-					.setValue(this.plugin.settings.mySetting)
-					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
-						await this.plugin.saveSettings();
-					}),
-			);
-	}
-}
