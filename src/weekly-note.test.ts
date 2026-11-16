@@ -9,11 +9,17 @@ interface FakeFile {
 	parent: { path: string };
 }
 
-function fakeVault(existing: Record<string, string>) {
+type LinkStyle = 'wikilink' | 'markdown';
+
+function fakeVault(
+	existing: Record<string, string>,
+	linkStyle: LinkStyle = 'wikilink',
+) {
 	const files = new Map(Object.entries(existing));
 	const folders = new Set(['/']);
 	for (const path of files.keys()) folders.add(parentPath(path));
 	const opened: string[] = [];
+	const linkSources: string[] = [];
 
 	const toFile = (path: string): FakeFile => ({
 		path,
@@ -38,7 +44,12 @@ function fakeVault(existing: Record<string, string>) {
 			getMarkdownFiles: () => [...files.keys()].map(toFile),
 		},
 		fileManager: {
-			generateMarkdownLink: (file: FakeFile) => `[[${file.basename}]]`,
+			generateMarkdownLink: (file: FakeFile, sourcePath: string) => {
+				linkSources.push(sourcePath);
+				return linkStyle === 'markdown'
+					? `[${file.basename}](${encodeURI(file.path)})`
+					: `[[${file.basename}]]`;
+			},
 		},
 		workspace: {
 			getLeaf: () => ({
@@ -50,7 +61,7 @@ function fakeVault(existing: Record<string, string>) {
 		},
 	} as unknown as App;
 
-	return { app, files, folders, opened };
+	return { app, files, folders, opened, linkSources };
 }
 
 function parentPath(path: string): string {
@@ -131,6 +142,21 @@ describe('openThisWeeksNote', () => {
 
 		expect(files.get('Weekly/Week-47-2026-11-15.md')).toStartWith(
 			'Previous: [[Week-46-2026-11-08]]\n\n## Mon 2026-11-16',
+		);
+	});
+
+	test('previous link follows the vault link format', async () => {
+		setSystemTime(new Date(2026, 10, 18));
+		const { app, files, linkSources } = fakeVault(
+			{ 'My Weekly/Week-46-2026-11-08.md': '' },
+			'markdown',
+		);
+
+		await openThisWeeksNote(app, settings({ folder: 'My Weekly' }));
+
+		expect(linkSources).toEqual(['My Weekly/Week-47-2026-11-15.md']);
+		expect(files.get('My Weekly/Week-47-2026-11-15.md')).toStartWith(
+			'Previous: [Week-46-2026-11-08](My%20Weekly/Week-46-2026-11-08.md)',
 		);
 	});
 
