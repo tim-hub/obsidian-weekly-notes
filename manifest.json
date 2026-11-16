@@ -1,7 +1,7 @@
 {
 	"id": "weekly-notes",
 	"name": "Weekly notes",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "1.6.6",
 	"description": "Open this week's note, with a header for each day and a link to the previous week.",
 	"author": "tim",
