@@ -42,8 +42,11 @@ export function buildWeeklyNoteContent(
 	)
 		.filter((day) => WEEKDAYS[headerDays].includes(day.day()))
 		.map((day) => `## ${day.format(headerFormat)}`);
-	const sections = previousLink
-		? [`Previous: ${previousLink}`, ...dayHeaders]
-		: dayHeaders;
+	const sections = [
+		...(previousLink ? [previousLink] : []),
+		...dayHeaders,
+		'---',
+		'## Next week',
+	];
 	return `${sections.join('\n\n')}\n`;
 }

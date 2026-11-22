@@ -34,7 +34,12 @@ async function createWeeklyNote(
 		weekStart,
 	);
 	const previousLink = previous
-		? app.fileManager.generateMarkdownLink(previous, path)
+		? app.fileManager.generateMarkdownLink(
+				previous,
+				path,
+				undefined,
+				`previous week - ${previous.basename}`,
+			)
 		: null;
 	return app.vault.create(
 		path,

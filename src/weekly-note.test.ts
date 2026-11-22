@@ -45,11 +45,16 @@ function fakeVault(
 			getMarkdownFiles: () => [...files.keys()].map(toFile),
 		},
 		fileManager: {
-			generateMarkdownLink: (file: FakeFile, sourcePath: string) => {
+			generateMarkdownLink: (
+				file: FakeFile,
+				sourcePath: string,
+				subpath?: string,
+				alias?: string,
+			) => {
 				linkSources.push(sourcePath);
 				return linkStyle === 'markdown'
-					? `[${file.basename}](${encodeURI(file.path)})`
-					: `[[${file.basename}]]`;
+					? `[${alias ?? file.basename}](${encodeURI(file.path)})`
+					: `[[${file.basename}${alias ? `|${alias}` : ''}]]`;
 			},
 		},
 		workspace: {
@@ -95,6 +100,8 @@ describe('openThisWeeksNote', () => {
 				'## Wed 2026-11-18',
 				'## Thu 2026-11-19',
 				'## Fri 2026-11-20',
+				'---',
+				'## Next week',
 			].join('\n\n') + '\n',
 		);
 	});
@@ -114,6 +121,8 @@ describe('openThisWeeksNote', () => {
 				'## Thu 2026-11-19',
 				'## Fri 2026-11-20',
 				'## Sat 2026-11-21',
+				'---',
+				'## Next week',
 			].join('\n\n') + '\n',
 		);
 	});
@@ -129,7 +138,7 @@ describe('openThisWeeksNote', () => {
 
 		const content = files.get('Weekly/Week-46-2026-11-09.md');
 		expect(content?.split('\n\n')[0]).toBe('## Mon 2026-11-09');
-		expect(content?.trim().split('\n\n')[6]).toBe('## Sun 2026-11-15');
+		expect(content?.split('\n\n')[6]).toBe('## Sun 2026-11-15');
 	});
 
 	test('links latest earlier weekly note in the same folder', async () => {
@@ -145,7 +154,7 @@ describe('openThisWeeksNote', () => {
 		await openThisWeeksNote(app, settings());
 
 		expect(files.get('Weekly/Week-47-2026-11-15.md')).toStartWith(
-			'Previous: [[Week-46-2026-11-08]]\n\n## Mon 2026-11-16',
+			'[[Week-46-2026-11-08|previous week - Week-46-2026-11-08]]\n\n## Mon 2026-11-16',
 		);
 	});
 
@@ -160,7 +169,7 @@ describe('openThisWeeksNote', () => {
 
 		expect(linkSources).toEqual(['My Weekly/Week-47-2026-11-15.md']);
 		expect(files.get('My Weekly/Week-47-2026-11-15.md')).toStartWith(
-			'Previous: [Week-46-2026-11-08](My%20Weekly/Week-46-2026-11-08.md)',
+			'[previous week - Week-46-2026-11-08](My%20Weekly/Week-46-2026-11-08.md)',
 		);
 	});
 
@@ -192,7 +201,7 @@ describe('openThisWeeksNote', () => {
 		await openThisWeeksNote(app, settings({ folder: '' }));
 
 		expect(files.get('Week-47-2026-11-15.md')).toStartWith(
-			'Previous: [[Week-46-2026-11-08]]',
+			'[[Week-46-2026-11-08|previous week - Week-46-2026-11-08]]',
 		);
 	});
 
@@ -204,7 +213,7 @@ describe('openThisWeeksNote', () => {
 		await openThisWeeksNote(app, settings());
 
 		expect(files.get('Weekly/Week-47-2026-11-15.md')).toStartWith(
-			'Previous: [[Week-46-2026-11-08]]',
+			'[[Week-46-2026-11-08|previous week - Week-46-2026-11-08]]',
 		);
 	});
 

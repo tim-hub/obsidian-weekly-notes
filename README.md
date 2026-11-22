@@ -7,15 +7,21 @@ Obsidian plugin that works like the core **Daily notes** plugin, but for weeks.
 Select the **Open this week's note** ribbon icon (or run the command of the same name).
 
 - If this week's note exists, it opens
-- Otherwise it is created with a header for each day (Mon–Fri by default), and a `Previous:` link to the latest earlier weekly note in the same folder. The link follows **Settings → Files and links** (`[[wikilink]]` or `[markdown](link)`)
+- Otherwise it is created with a header for each day (Mon–Fri by default) and a `## Next week` section at the bottom. If an earlier weekly note exists in the same folder, a `previous week` link to the latest one goes at the top. The link follows **Settings → Files and links** (`[[wikilink]]` or `[markdown](link)`)
 
 ```
-Previous: [[Week-46-2026-11-08]]
+[[Week-46-2026-11-08|previous week - Week-46-2026-11-08]]
 
 ## Mon 2026-11-16
 
 ## Tue 2026-11-17
 ...
+
+## Fri 2026-11-20
+
+---
+
+## Next week
 ```
 
 ## Settings
