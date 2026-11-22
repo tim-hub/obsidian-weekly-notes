@@ -1,6 +1,6 @@
 {
 	"name": "weekly-notes",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Weekly notes for Obsidian: one note per week with a header for each day.",
 	"main": "main.js",
 	"type": "module",
